@@ -1,0 +1,4 @@
+include *.txt
+include *.md
+recursive-exclude tests *
+recursive-exclude .github *

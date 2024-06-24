@@ -1,0 +1,63 @@
+# https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
+[project]
+name = "alphahunt-sdk"
+dynamic = ["version"]
+description = ""
+authors = [
+    {name = "Wes Young", email="wes@csirtgadgets.com"},
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "requests",
+    "cachetools",
+]
+
+[tool.setuptools_scm]
+write_to = "alphahunt_sdk/_version.py"
+
+[project.optional-dependencies]
+
+dev = [
+    "black",
+    "build",
+    "twine",
+    "flake8",
+    "flake8-bugbear",
+    "flake8-comprehensions",
+    "mypy"
+]
+
+test = [
+    'coverage',
+    'pytest',
+    "pytest-cov"
+]
+
+all = ['alphahunt_sdk[dev,test]']
+
+[project.scripts]
+alphahunt = "alphahunt_sdk.cli:main"
+ah = "alphahunt_sdk.cli:main"
+
+[build-system]
+requires = [
+    "setuptools ~= 62.0.0",
+    "wheel",
+    "setuptools-scm[toml]>=6.2.3",
+]
+build-backend = "setuptools.build_meta"
+
+# https://github.com/pandas-dev/pandas/blob/main/pyproject.toml
+#[tool.mypy]
+
+[tool.black]
+line-length = 88
+target_version = ['py310']
+src_paths = ['alphahunt_sdk']
+#skip-string-normalization = true
+
+[tool.pytest.ini_options]
+addopts = "--maxfail=2 -rf -sv --cov=alphahunt_sdk --cov-report=term-missing"
+testpaths = "tests"
