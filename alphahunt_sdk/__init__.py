@@ -162,6 +162,7 @@ class Client:
         tags: list = None,
         insights: bool = False,
         related: bool = False,
+        retries: int = 20,
     ):
         params = {"q": q}
         for e in ["wait", "verbose", "insights", "related"]:
@@ -171,7 +172,7 @@ class Client:
         if tags:  # pragma: no cover
             params["tags"] = ",".join(tags)
 
-        return self._get(self.remote, params=params)
+        return self._get(self.remote, params=params, retries=retries)
 
     def faq(self, q: str, retries: int = 5):
         rv = self.session.post(f"{self.remote}/faq", json={"q": q})
@@ -274,15 +275,41 @@ class Client:
     def integration_disable(self, name):
         return self._delete(f"{self.remote}/account/integrations/{name}")
 
-    def _get(self, url, params=None):
+    def _get(self, url, params=None, retries: int = 20):
         rv = self.session.get(url, params=params)
+        if rv.status_code == 403:
+            raise PermissionError("Forbidden (HTTP403)")
+
         if rv.status_code == 200:
             return rv.json()
 
-        if rv.status_code == 403:
-            raise PermissionError(f"HTTP: 403")
+        if rv.status_code == 202:
+            sleep_time = 5
+            sleep(sleep_time)
+            for _ in range(retries):
+                rv = self.session.get(f"{self.remote}")
 
-        raise IOError(rv.text)  # pragma: no cover
+                if rv.status_code >= 300:
+                    logger.error(rv.text)
+                    raise IOError(rv.status_code)
+
+                data = rv.json()
+
+                if rv.status_code == 200:
+                    return data
+
+                if rv.status_code == 202:
+                    sleep(sleep_time)
+                    if sleep_time > 15:
+                        sleep_time = sleep_time * 0.75
+                    continue
+
+                raise IOError("Unable to get answer. Please try again later.")
+
+            raise IOError("Unable to get answer. Please try again later.")
+
+        logger.error(rv.text)  # pragma: no cover
+        raise IOError(rv.status_code)
 
     def _put(self, url, data=None):
         rv = self.session.put(url, json=data)
