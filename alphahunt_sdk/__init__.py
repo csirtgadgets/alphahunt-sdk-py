@@ -316,7 +316,11 @@ class Client:
         if rv.status_code == 201:
             return rv.json()
 
-        return rv.text
+        raise IOError(f"HTTP PUT failed: {rv.status_code} - {rv.text}")
 
     def _delete(self, url):
-        return self.session.delete(url).json()
+        rv = self.session.delete(url).json()
+        if rv.status_code == 200:
+            return rv.json()
+
+        raise IOError(f"HTTP DELETE failed: {rv.status_code} - {rv.text}")
