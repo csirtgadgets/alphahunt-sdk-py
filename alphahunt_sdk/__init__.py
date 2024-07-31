@@ -287,7 +287,7 @@ class Client:
             sleep_time = 5
             sleep(sleep_time)
             for _ in range(retries):
-                rv = self.session.get(f"{self.remote}")
+                rv = self.session.get(url, params=params)
 
                 if rv.status_code >= 300:
                     logger.error(rv.text)

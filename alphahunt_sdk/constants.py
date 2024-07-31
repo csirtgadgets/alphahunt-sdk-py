@@ -6,7 +6,7 @@ VERSION = __version__
 
 TOKEN = os.getenv("ALPHAHUNT_TOKEN")
 REMOTE = os.getenv("ALPHAHUNT_REMOTE", "https://api.alphahunt.io")
-API_VERSION = os.getenv("ALPHAHUNT_API_VERSION", "3")
+API_VERSION = os.getenv("ALPHAHUNT_API_VERSION", "4")
 
 HEADERS = {
     "User-Agent": f"alphahuntsdk-py/{VERSION}",
