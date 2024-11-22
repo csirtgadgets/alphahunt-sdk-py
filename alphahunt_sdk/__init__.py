@@ -1,6 +1,7 @@
 from time import sleep
 import logging
 
+from .errors import RateLimitError
 from .utils import requests_retry_session
 from .constants import REMOTE, TOKEN, HEADERS
 
@@ -224,6 +225,9 @@ class Client:
             },
         )
 
+        if rv.status_code == 429:
+            raise RateLimitError("Rate limit exceeded (HTTP429)")
+
         if rv.status_code >= 300:
             raise IOError(rv.text)
 
@@ -239,6 +243,9 @@ class Client:
             rv = self.session.get(
                 f"{self.remote}/research", params={"tracking_id": data["id"]}
             )
+
+            if rv.status_cde == 429:
+                raise RateLimitError("Rate limit exceeded (HTTP429)")
 
             if rv.status_code >= 300:
                 raise IOError(rv.text)
@@ -279,6 +286,9 @@ class Client:
         rv = self.session.get(url, params=params)
         if rv.status_code == 403:
             raise PermissionError("Forbidden (HTTP403)")
+
+        if rv.status_code == 429:
+            raise RateLimitError("Rate limit exceeded (HTTP429)")
 
         if rv.status_code == 200:
             return rv.json()

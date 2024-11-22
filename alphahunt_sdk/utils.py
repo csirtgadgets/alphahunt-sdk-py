@@ -7,7 +7,7 @@ from .constants import RETRIES_BACKOFF, RETRIES
 def requests_retry_session(
     retries=RETRIES,
     backoff_factor=RETRIES_BACKOFF,
-    status_forcelist=(429, 504),
+    status_forcelist=[504],
     session=None,
 ):
 
