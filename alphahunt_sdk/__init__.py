@@ -244,7 +244,7 @@ class Client:
                 f"{self.remote}/research", params={"tracking_id": data["id"]}
             )
 
-            if rv.status_cde == 429:
+            if rv.status_code == 429:
                 raise RateLimitError("Rate limit exceeded (HTTP429)")
 
             if rv.status_code >= 300:
