@@ -144,7 +144,7 @@ class Client:
     token = None
     remote = None
 
-    def __init__(self, token=TOKEN, remote=REMOTE, version=3):
+    def __init__(self, token=TOKEN, remote=REMOTE, version=4):
         self.token = token
         self.remote = remote
         self.version = version
@@ -214,7 +214,7 @@ class Client:
         raise IOError("Unable to get answer. Please try again later.")
 
     def research(
-        self, q, keywords: list = None, chat_history: list = None, retries: int = 20
+        self, q, keywords: list = None, chat_history: list = None, retries: int = 50
     ):
         rv = self.session.post(
             f"{self.remote}/research",
@@ -237,7 +237,7 @@ class Client:
             return data["answer"]
 
         logger.info(f"waiting for {data['id']}")
-        sleep_time = 45
+        sleep_time = 20
         sleep(sleep_time)
         for _ in range(retries):
             rv = self.session.get(
@@ -257,8 +257,6 @@ class Client:
 
             if rv.status_code == 202:
                 sleep(sleep_time)
-                if sleep_time > 15:
-                    sleep_time = sleep_time * 0.75
                 logger.info(f"re-checking: {data['id']}")
                 continue
 

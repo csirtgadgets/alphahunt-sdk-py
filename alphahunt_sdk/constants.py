@@ -14,5 +14,5 @@ HEADERS = {
     "Content-Type": "application/json",
 }
 
-RETRIES = int(os.getenv("ALPHAHUNTSDK_RETRIES", 5))
+RETRIES = int(os.getenv("ALPHAHUNTSDK_RETRIES", 50))
 RETRIES_BACKOFF = int(os.getenv("ALPHAHUNTSDK_RETRIES_BACKOFF", 0.1))
