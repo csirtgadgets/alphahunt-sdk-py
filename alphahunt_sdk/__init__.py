@@ -70,6 +70,7 @@ def research(
     token=TOKEN,
     chat_history: list = None,
     retries: int = 20,
+    wait: bool = True
 ):
     """Research a broader topic
 
@@ -82,7 +83,7 @@ def research(
     :return: results
     """
     return Client(remote=remote, token=token).research(
-        q, keywords=keywords, chat_history=chat_history, retries=retries
+        q, keywords=keywords, chat_history=chat_history, retries=retries, wait=wait
     )
 
 
@@ -214,7 +215,7 @@ class Client:
         raise IOError("Unable to get answer. Please try again later.")
 
     def research(
-        self, q, keywords: list = None, chat_history: list = None, retries: int = 50
+        self, q, keywords: list = None, chat_history: list = None, retries: int = 50, wait: bool = True
     ):
         rv = self.session.post(
             f"{self.remote}/research",
@@ -235,6 +236,10 @@ class Client:
 
         if rv.status_code == 200:
             return data["answer"]
+
+        if not wait:
+            logger.info(f"Research started with ID: {data['id']}")
+            return data["id"]
 
         logger.info(f"waiting for {data['id']}")
         sleep_time = 20

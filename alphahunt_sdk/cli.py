@@ -98,7 +98,7 @@ def main():  # pragma: no cover
         raise SystemExit
 
     elif args.research:
-        print(research(args.research))
+        print(research(args.research, wait=args.wait))
         raise SystemExit
 
     elif args.integrations:
